@@ -1,16 +1,24 @@
-from transacoes import viewsets
+from transacoes import views
 from django.urls import path, include
-from rest_framework import routers
-# from . import views
 
+
+urlpatterns = [
+    path('receitas/', views.ReceitasList.as_view()),
+    path('receitas/<int:pk>/', views.ReceitaDetail.as_view()),
+    path('despesas/', views.DespesasList.as_view()),
+    path('despesas/<int:pk>/', views.DespesaDetail.as_view()),
+]
+
+'''
 router = routers.SimpleRouter()
 
-router.register(r'receitas', viewsets.ReceitasViewSet, basename='receitas')
-router.register(r'despesas', viewsets.DespesasViewSet, basename='despesas')
+router.register(r'receitas', views.Receitas.as_view())
+router.register(r'despesas', views.Despesas.as_view())
 
 urlpatterns = [
     path("", include(router.urls)),
 ]
+'''
 
 '''
 urlpatterns = [
