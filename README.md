@@ -26,11 +26,12 @@
 	 - [x] Listagem de Despesas por mês
 	 - [x] Resumo do mẽs (Receita - Despesa)
 	 - [ ] ⌛Testes automatizados
-<br>
+	<br>
  - [ ] **Semana 3 e 4:**
 	 - [ ] Ajuste no banco de dados para autenticação
 	 - [ ] Somente usuários autenticados podem interagir na API
 	 - [ ] Deploy :cloud:
+	<br>
 ---
 
 **#alurachallengebackend3**  :rocket:
