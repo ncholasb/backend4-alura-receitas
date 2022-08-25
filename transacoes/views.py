@@ -1,5 +1,5 @@
 from transacoes.models import Receitas, Despesas
-from transacoes.serializers import ReceitasSerializer, DespesasSerializer, ReceitaListSerializer, DespesaListSerializer  # noqa
+from transacoes.serializers import ReceitasSerializer, DespesasSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -200,7 +200,6 @@ class SummaryView(APIView):
 
     def get_despesas_total(self, ano, mes):
         despesas = Despesas.objects.filter(data__year=ano, data__month=mes)
-        # despesas = Despesas.objects.filter(data__contains="{}-{}".format(ano, mes))  # noqa
         value: float = 0
         for row in despesas:
             value += row.valor
@@ -208,7 +207,6 @@ class SummaryView(APIView):
 
     def get_receitas_total(self, ano, mes):
         receitas = Receitas.objects.filter(data__year=ano, data__month=mes)
-        #receitas = Receitas.objects.filter(data__contains="{}-{}".format(ano, mes))  # noqa
         value: float = 0
         for row in receitas:
             value += row.valor
@@ -216,7 +214,6 @@ class SummaryView(APIView):
 
     def get_total_gasto_categoria(self, ano, mes):
         despesas = Despesas.objects.filter(data__year=ano, data__month=mes)
-       # despesas = Despesas.objects.filter(data__contains="{}-{}".format(ano, mes))  # noqa
         dict_categorias = self.get_dict_categorias()
         for row in despesas:
             dict_categorias[row.categoria] += row.valor
@@ -233,136 +230,3 @@ class SummaryView(APIView):
             "Imprevistos": 0.0,
             "Outras": 0.0
         }
-
-# class ReceitaViewSet(viewsets.ModelViewSet):
-#     '''
-#     Lista todas as receitas registradas
-#     '''
-#     queryset = Receitas.objects.all()
-#     serializer_class = ReceitasSerializer
-
-#     def get_queryset(self):
-#         queryset = Receitas.objects.all()
-#         descricao = self.request.query_params.get('descricao')
-
-#         if descricao:
-#             queryset = queryset.filter(descricao__icontains=descricao)
-#         return queryset
-
-#     def create(self, request):
-#         """
-#         Regras para criação de uma nova receita.
-#         Receitas com mesmo descricao em mesmo mês/ano não podem ser criadas.
-#         """
-#         descricao_request = request.data['descricao']
-#         data_request = request.data['data']
-#         data_request_mes = data_request.split('-')[1]
-#         data_request_ano = data_request.split('-')[0]
-
-#         if Receitas.objects.filter(data__year=data_request_ano, data__month=data_request_mes) & Receitas.objects.filter(descricao=descricao_request):  # noqa
-#             return Response(
-#                 {"error": "Receita já cadastrada no mesmo mês/ano"},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-#         else:
-
-#             serializer = self.get_serializer(data=request.data)
-#             serializer.is_valid(raise_exception=True)
-#             instance = self.perform_create(serializer)
-#             serializer = self.get_serializer(instance=instance)
-
-#             return Response(
-#                 f"Receita '{descricao_request}' cadastrada com sucesso",
-#                 status=status.HTTP_201_CREATED
-#             )
-
-
-# class ReceitaList(generics.ListAPIView):
-#     '''
-#     Exibe a receita registrada que cumpre o critério de busca,
-#     passado por parâmetro
-#     '''
-
-#     serializer_class = ReceitaListSerializer
-
-#     def get_queryset(self):
-#         queryset = Receitas.objects.filter(data__year=self.kwargs['year'],
-#                                            data__month=self.kwargs['month'])
-#         return queryset
-
-
-# class DespesaViewSet(viewsets.ModelViewSet):
-#     '''
-#     Lista todas as despesas registradas
-#     '''
-#     queryset = Despesas.objects.all()
-#     serializer_class = DespesasSerializer
-
-#     def get_queryset(self):
-#         queryset = Receitas.objects.all()
-#         descricao = self.request.query_params.get('descricao')
-
-#         if descricao:
-#             queryset = queryset.filter(descricao__icontains=descricao)
-#         return queryset
-
-#     def create(self, request):
-#         """
-#         Regras para criação de uma nova despesa.
-#         Despesas com mesmo descricao em mesmo mês/ano não podem ser criadas.
-#         """
-#         descricao_request = request.data['descricao']
-#         data_request = request.data['data']
-#         data_request_mes = data_request.split('-')[1]
-#         data_request_ano = data_request.split('-')[0]
-
-#         if Despesas.objects.filter(data__year=data_request_ano, data__month=data_request_mes) & Despesas.objects.filter(descricao=descricao_request):  # noqa
-#             return Response(
-#                 {"error": "Despesa já cadastrada no mesmo mês/ano"},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-#         else:
-
-#             serializer = self.get_serializer(data=request.data)
-#             serializer.is_valid(raise_exception=True)
-#             instance = self.perform_create(serializer)
-#             serializer = self.get_serializer(instance=instance)
-
-#             return Response(
-#                 f"Despesa '{descricao_request}' cadastrada com sucesso",
-#                 status=status.HTTP_201_CREATED
-#             )
-
-
-# class DespesaList(generics.ListAPIView):
-#     '''
-#     Exibe a despesa registrada que cumpre o critério de busca,
-#     passado por parâmetro
-#     '''
-#     serializer_class = DespesaListSerializer
-
-#     def get_queryset(self):
-#         queryset = Despesas.objects.filter(data__year=self.kwargs['year'],
-#                                            data__month=self.kwargs['month'])
-#         return queryset
-
-
-# class SummaryView(APIView):
-#     '''
-#     Exibe o resumo de receitas e despesas registradas
-#     '''
-#     queryset = Receitas.objects.none()
-
-#     def get(self, request, month, year, format=None):
-#         receita_month = Receitas.objects.filter(data__month=month, data__year=year).aggregate(Sum('valor'))['valor__sum'] or 0  # noqa
-#         despesa_month = Despesas.objects.filter(data__month=month, data__year=year).aggregate(Sum('valor'))['valor__sum'] or 0  # noqa
-#         total = receita_month - despesa_month
-#         category_despesa = Despesas.objects.filter(data__month=month, data__year=year).values('categoria').annotate(total_valor=Sum('valor'))  # noqa
-
-#         return Response({
-#             'Receita no mês': f'R$ {receita_month}',
-#             'Despesa no mês': f'R$ {despesa_month}',
-#             'Saldo final': f'R$ {total}',
-#             'Categorias de despesa': category_despesa
-
-#         })
