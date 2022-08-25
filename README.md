@@ -18,14 +18,14 @@
 	 - [x] Detalhamento de Receita ou Despesa pela  `id`
 	 - [x] Testes via *Postman*/*Insomia*
 	 <br>
- - [ ] **Semana 2:**
+ - [x] **Semana 2:**
 	 - [x] Categorias para Despesas
 	 - [x] Busca de Receitas por parâmetros da URL
 	 - [x] Busca de Despesas por parâmetros da URL
 	 - [x] Listagem de Receitas por mês
 	 - [x] Listagem de Despesas por mês
-	 - [x] Resumo do mẽs (Receita - Despesa)
-	 - [ ] ⌛Testes automatizados
+	 - [x] Resumo do mês (Receita - Despesa)
+	 - [x] Testes automatizados
 	<br>
  - [ ] **Semana 3 e 4:**
 	 - [ ] Ajuste no banco de dados para autenticação
