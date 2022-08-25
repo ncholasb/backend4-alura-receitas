@@ -63,12 +63,12 @@ class TestCreateDespesas(APITestCase):
         self.client.post(self.URL, data={
             "descricao": "Despesa 1",
             "valor": 1500.00,
-             "data": "2022-08-11 20:18:50"  # noqa
+            "data": "2022-08-11 20:18:50"
         })
         response = self.client.post(self.URL, data={
             "descricao": "Despesa 1",
             "valor": 1500.00,
-             "data": "2022-08-12 20:18:50"  # noqa
+            "data": "2022-08-12 20:18:50"
         })
         value = {"error": "Os dados não foram registrados..."}
         self.assertEqual(value, response.data)
@@ -123,7 +123,7 @@ class TestUpdate(APITestCase):
             "id": 1,
             "descricao": "Despesa 1",
             "valor": 1500.00,
-            "data": "2022-08-24 20:46:55"  # noqa
+            "data": "2022-08-24 20:46:55"
         })
         self.assertEqual({"error": f"Não foi encontrada nenhuma Despesa com id: 1"}, response.data)  # noqa
 
@@ -139,7 +139,7 @@ class TestUpdate(APITestCase):
             "categoria": "Outras",
             "descricao": "Despesa 1",
             "valor": 1500.00,
-            "data": "2022-08-25"  # noqa
+            "data": "2022-08-25"
         })
         self.assertEqual({"message": "Despesa atualizada com sucesso!"}, response.data)  # noqa
 
