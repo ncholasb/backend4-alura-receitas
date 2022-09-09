@@ -1,11 +1,23 @@
+from django.middleware import csrf
+from rest_framework_simplejwt.tokens import RefreshToken
 from transacoes.models import Receitas, Despesas
-from transacoes.serializers import ReceitasSerializer, DespesasSerializer  # noqa
+from transacoes.serializers import (
+    ReceitasSerializer,
+    DespesasSerializer,
+    UserRegistrySerializer,
+    UserLoginSerializer)
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
+from django.contrib.auth import authenticate
+from django.conf import settings
+from rest_framework.permissions import IsAuthenticated, AllowAny
+import uuid
 
 
 class ReceitasViewSet(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         if request.GET.get("descricao"):
             receitas = Receitas.objects.filter(
@@ -42,6 +54,8 @@ class ReceitasViewSet(APIView):
 
 
 class ReceitasId(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id):
         try:
             receitas = Receitas.objects.get(id=id)
@@ -83,6 +97,8 @@ class ReceitasId(APIView):
 
 
 class ReceitasAnoMes(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, ano, mes):
         receitas = Receitas.objects.filter(data__year=ano) & Receitas.objects.filter(data__month=mes)  # noqa
         if receitas.count() != 0:
@@ -96,6 +112,8 @@ class ReceitasAnoMes(APIView):
 
 
 class DespesasViewSet(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         if request.GET.get("descricao"):
             despesas = Despesas.objects.filter(
@@ -132,6 +150,8 @@ class DespesasViewSet(APIView):
 
 
 class DespesasId(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, id):
         try:
             despesas = Despesas.objects.get(id=id)
@@ -175,6 +195,8 @@ class DespesasId(APIView):
 
 
 class DespesasAnoMes(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, ano, mes):
         despesas = Despesas.objects.filter(data__year=ano) & Despesas.objects.filter(data__month=mes)  # noqa
         if despesas.count() != 0:
@@ -188,6 +210,8 @@ class DespesasAnoMes(APIView):
 
 
 class SummaryView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, ano, mes):
         receitas_total = self.get_receitas_total(ano, mes)
         despesas_total = self.get_despesas_total(ano, mes)
@@ -232,3 +256,77 @@ class SummaryView(APIView):
             "Imprevistos": 0.0,
             "Outras": 0.0
         }
+
+
+class UserRegistryViewSet(generics.GenericAPIView):
+    '''Cria usuários'''
+    serializer_class = UserRegistrySerializer
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if (serializer.is_valid()):
+            serializer.save()
+            return Response({
+                "RequestID": str(uuid.uuid4()),
+                "Message": "User created successfully",
+                "User": serializer.data}, status=status.HTTP_201_CREATED
+            )
+
+        return Response(
+            {"Errors": serializer.errors},
+            status=status.HTTP_400_BAD_REQUEST)
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+
+
+class LoginView(generics.GenericAPIView):
+    serializer_class = UserLoginSerializer
+
+    def post(self, request, format=None):
+        data = request.data
+        response = Response()
+        username = data.get('username', None)
+        password = data.get('password', None)
+
+        user = authenticate(
+            username=username, password=password
+        )
+
+        if user is not None:
+            data = get_tokens_for_user(user)
+            response.set_cookie(
+                key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+                value=data["access"],
+                expires=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+                secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
+            )
+            csrf.get_token(request)
+            response.data = {"Success": "Login successfully", "data": data}
+
+            return response
+        else:
+            return Response({"Invalid": "Invalid username or password!!"},
+                            status=status.HTTP_404_NOT_FOUND)
+
+
+class LogoutView(APIView):
+
+    def get(self, request):
+        response = Response()
+
+        response.delete_cookie('access_token')
+        response.data = {
+            'message': 'success, cookies of auth deleted'
+        }
+
+        return response

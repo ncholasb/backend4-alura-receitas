@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Receitas(models.Model):
+    usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     descricao = models.CharField(max_length=200)
     valor = models.FloatField()
     data = models.DateField(null=False, blank=False)
@@ -22,7 +23,7 @@ class CategoriasDespesasEnum(models.TextChoices):
 
 
 class Despesas(models.Model):
-
+    usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     descricao = models.CharField(max_length=200)
     valor = models.FloatField()
     categoria = models.CharField(

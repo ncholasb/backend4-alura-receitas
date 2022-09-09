@@ -15,8 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from transacoes.views import UserRegistryViewSet, LoginView, LogoutView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/v1/", include("transacoes.urls")),
+    path("auth/register/", UserRegistryViewSet.as_view(), name='register'),
+    path("auth/login/", LoginView.as_view(), name='login'),
+    path("auth/refresh-token/", TokenRefreshView.as_view(), name='refreshtoken'),  # noqa
+    path("auth/logout/", LogoutView.as_view(), name='logout')
 ]
