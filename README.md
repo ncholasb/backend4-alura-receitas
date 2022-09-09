@@ -28,7 +28,7 @@
 	 - [x] Testes automatizados
 	<br>
  - [ ] **Semana 3 e 4:**
-	 - [ ] Ajuste no banco de dados para autenticação
+	 - [x] Ajuste no banco de dados para autenticação
 	 - [ ] Somente usuários autenticados podem interagir na API
 	 - [ ] Deploy :cloud:
 	<br>
