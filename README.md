@@ -29,9 +29,9 @@
 	<br>
  - [ ] **Semana 3 e 4:**
 	 - [x] Ajuste no banco de dados para autenticação
-	 - [ ] Somente usuários autenticados podem interagir na API
+	 - [x] Somente usuários autenticados podem interagir na API
 	 - [ ] Deploy :cloud:
 	<br>
 ---
 
-**#alurachallengebackend3**  :rocket:
+**#alurachallengebackend4**  :rocket:
